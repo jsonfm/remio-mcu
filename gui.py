@@ -82,9 +82,10 @@ class CustomMockup(QMainWindow, Mockup):
             "btn2": False,
             "btn3": False,
         })
+        self.variables.setEnabled(False)
 
     def configureMJPEG(self):
-        self.mjpegserver = MJPEGServer(self.camera["webcam"])
+        self.mjpegserver = MJPEGServer(self.camera["webcam"], fps=15)
         self.mjpegserver.start()
 
     # GUI
@@ -200,7 +201,7 @@ class CustomMockup(QMainWindow, Mockup):
         self.socket.emit(EXPERIMENT_SENDS_DATA_SERVER, self.variables.json())
 
         # Lock the GUI and wait for a response
-        if lock:
+        if lock and self.variables.isEnabled():
             self.lockGUI()
             self.variablesTimer.resume(now=False) 
 

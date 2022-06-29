@@ -6,6 +6,7 @@ class Variables:
     
     Args:
         variables: a dictionary with variables.
+        enabled: flag to control enabled state.
     Example:
         variables = Variable({
             'var1': 1, # type: int
@@ -14,10 +15,11 @@ class Variables:
             'var4': False, # type: bool
         })
     """
-    def __init__(self, variables: dict = {}):
+    def __init__(self, variables: dict = {}, enabled: bool = True):
         self.variables = variables
         self.backup = variables.copy()
-        self.updatedStatus = False
+        self.receivedStatus = False
+        self.enabled = enabled
 
     def __len__(self):
         return len(self.variables)
@@ -30,6 +32,14 @@ class Variables:
     
     def __setitem__(self, key: str, value):
         self.variables[key] = value
+    
+    def isEnabled(self):
+        """Checks if variables workflow is enabled."""
+        return self.enabled
+
+    def setEnabled(self, value: bool = True):
+        """Updates the enable status"""
+        self.enabled = value
 
     def restore(self):
         """Restores the variables backup."""
@@ -59,12 +69,12 @@ class Variables:
             data = json.loads(data)
         self.variables = data
         self.backup = dict(self.variables)
-        self.setUpdated(True)
+        self.setReceivedStatus(True)
 
-    def setUpdated(self, value: bool):
+    def setReceivedStatus(self, value: bool):
         """Updates the updated status."""
-        self.updatedStatus = value
+        self.receivedStatus = value
     
     def updated(self):
         """Returns the updated status."""
-        return self.updatedStatus
+        return self.receivedStatus
