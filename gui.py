@@ -13,9 +13,7 @@ from settings import (
     cameraSettings,
     serialSettings,
 )
-from utils.timers import PausableTimer
 from utils.variables import Variables
-from threading import Thread
 
 
 ui_path = os.path.dirname(os.path.abspath(__file__))
@@ -64,7 +62,7 @@ class CustomMockup(QMainWindow, Mockup):
         """Configures socket on/emit events."""
         self.socket.on("connection", self.socketConnectionStatus)
         self.socket.on(SERVER_SENDS_DATA_EXPERIMENT, self.receiveVariables)
-        self.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_EXPERIMENT, self.streamVariablesOK)
+        self.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_EXPERIMENT, lambda: self.variables.streamedSucessfully())
         self.socket.on(SERVER_REQUESTS_DATA_EXPERIMENT, lambda: self.streamVariables(lock=False))
         self.socket.on(SERVER_STREAMER_SET_PAUSE_EXPERIMENT, lambda pause: self.updateVideoPauseState(pause))
 
@@ -73,7 +71,6 @@ class CustomMockup(QMainWindow, Mockup):
         self.videoTimer = QTimer()
         self.videoTimer.timeout.connect(self.updateVideo)
         self.videoTimer.start(1000 // 15)  # 1000 // FPS
-        self.variablesTimer = PausableTimer(3, self.superviseVariablesStreaming)
 
     def configureVariables(self):
         """Configures control variables."""
@@ -81,10 +78,11 @@ class CustomMockup(QMainWindow, Mockup):
             "btn1": False,
             "btn2": False,
             "btn3": False,
-        })
-        self.variables.setEnabled(False)
+        }, interval=3, supervise=self.superviseVariablesStreaming)
+        # self.variables.setEnabled(False)
 
     def configureMJPEG(self):
+        """Configures a MJPEG Server for streaming video."""
         self.mjpegserver = MJPEGServer(self.camera["webcam"], fps=15)
         self.mjpegserver.start()
 
@@ -122,13 +120,13 @@ class CustomMockup(QMainWindow, Mockup):
 
     def serialDataIncoming(self, data: str):
         """Reads incoming data from the serial device."""
-        message = data["arduino"]
-        if "$" in message:
-            print("message: ", message)
+        json = data["arduino"]
+        if "$" in json:
+            print("message: ", json)
         else:
-            self.variables.update(message)
+            self.variables.update(json)
             self.setVariablesOnGUI()
-            self.variables.setUpdated(False)
+            self.variables.setStreamingStatus(False)
             self.streamVariables()
 
     def serialReconnect(self, value: bool):
@@ -165,14 +163,9 @@ class CustomMockup(QMainWindow, Mockup):
 
     def superviseVariablesStreaming(self):
         """Checks the variables updated status and restores the backup if necessary.`"""
-        # If variables not reached the web then restore the backup
-        if not self.variables.updated():
-            self.variables.restore()
-            self.setVariablesOnGUI()
-        
-        # Reset updated variables status and unlock the GUI
-        self.variables.setUpdated(False)
-        self.variablesTimer.pause(reset=True)
+        self.variables.checkStreamingFail()
+        self.setVariablesOnGUI()
+        self.variables.resetStreamingStatus()
         self.unlockGUI()
 
     # Variables
@@ -187,12 +180,12 @@ class CustomMockup(QMainWindow, Mockup):
     def updateVariables(self, key: str, value=None):
         """Updates variables values and streams they to the server."""
         # Set a new single variable value
-        self.variables.set(key, value)
-        self.variables.setUpdated(False)
+        self.variables.set(key, value, backup=True, streamingStatus=False)
 
         # Send changes to the serial device
         self.serial["arduino"].write(self.variables.json())
 
+        # Stream variables
         self.streamVariables()
 
     def streamVariables(self, lock: bool = True):
@@ -203,17 +196,12 @@ class CustomMockup(QMainWindow, Mockup):
         # Lock the GUI and wait for a response
         if lock and self.variables.isEnabled():
             self.lockGUI()
-            self.variablesTimer.resume(now=False) 
-
-    def streamVariablesOK(self):
-        """It's called when the server notifies variables were received correctly."""
-        self.variables.setUpdated(True)
-        self.variablesTimer.resume(now=True)
+            self.variables.waitResponse()
 
     def closeEvent(self, event):
         """Stops running threads/processes when close the window."""
         self.stop()
-        self.variablesTimer.stop()
+        self.variables.stop()
         self.mjpegserver.stop(stop_camera=False)
 
 
@@ -229,7 +217,7 @@ if __name__ == "__main__":
         camera=True, 
         serial=False, 
         socket=True, 
-        streamer=False, # disable automatic streaming
+        streamer=False, # disables automatic streaming
         wait=False
     )
     experiment.show()

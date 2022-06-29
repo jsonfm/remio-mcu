@@ -1,12 +1,15 @@
+from typing import Union, Callable
 import json
+from .timers import PausableTimer
 
 
 class Variables:
-    """A variables dictionary with some extra functionalities, like state backup.
+    """A variables dictionary with some extra functionalities, like state backup and supervise intervaled callback.
     
     Args:
         variables: a dictionary with variables.
         enabled: flag to control enabled state.
+
     Example:
         variables = Variable({
             'var1': 1, # type: int
@@ -15,11 +18,18 @@ class Variables:
             'var4': False, # type: bool
         })
     """
-    def __init__(self, variables: dict = {}, enabled: bool = True):
+    def __init__(
+        self, 
+        variables: dict = {}, 
+        enabled: bool = True,
+        interval: Union[float, int] = 2,
+        supervise: Callable = None,
+    ):
         self.variables = variables
         self.backup = variables.copy()
-        self.receivedStatus = False
         self.enabled = enabled
+        self.streamingStatus = False
+        self.timer = PausableTimer(interval, supervise)
 
     def __len__(self):
         return len(self.variables)
@@ -45,11 +55,12 @@ class Variables:
         """Restores the variables backup."""
         self.variables = self.backup.copy()
 
-    def set(self, key: str, value, backup=True):
+    def set(self, key: str, value, backup: bool = True, streamingStatus: bool = False):
         """Updates a variable value"""
         if backup:
             self.backup = self.variables.copy()
         self.variables[key] = value
+        self.setStreamingStatus(streamingStatus)
     
     def get(self, key: str):
         """Returns a specific variable value."""
@@ -63,18 +74,40 @@ class Variables:
         """Returns the variables dict as JSON string."""
         return json.dumps(self.variables)
 
-    def update(self, data: str):
+    def update(self, data: Union[str, dict] = {}):
         """Updates the variables values."""
         if isinstance(data, str):
             data = json.loads(data)
         self.variables = data
         self.backup = dict(self.variables)
-        self.setReceivedStatus(True)
 
-    def setReceivedStatus(self, value: bool):
-        """Updates the updated status."""
-        self.receivedStatus = value
+    def streamed(self):
+        """Returns the current streaming status."""
+        return self.streamingStatus
+
+    def setStreamingStatus(self, value: bool = True):
+        """Updates the streaming status."""
+        self.streamingStatus = value
+
+    def streamedSucessfully(self):
+        """Should be called when variables streaming were successfully."""
+        self.setStreamingStatus(True)
+        self.timer.reset(now=True)
+
+    def waitResponse(self):
+        """Starts the supervise loop (timer)."""
+        self.timer.resume(now=False)
+
+    def checkStreamingFail(self):
+        """If variables were not streamed restores the variables backup."""
+        if not self.streamed():
+            self.restore()
+
+    def resetStreamingStatus(self):
+        """Restores streaming status and pauses the check timer."""
+        self.setStreamingStatus(False)
+        self.timer.pause(reset=True)
     
-    def updated(self):
-        """Returns the updated status."""
-        return self.receivedStatus
+    def stop(self):
+        """Stops the check timer."""
+        self.timer.stop()

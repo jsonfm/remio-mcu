@@ -5,7 +5,11 @@ import time
 
 
 class PausableTimer:
-    """A timer that executes a recurring task each certain time, using thread events for it."""
+    """A timer that executes a recurring task each certain time, using thread events for it.
+    Args:
+        interval: wait time in seconds.
+        callback: a function that will be called.
+    """
     def __init__(self, interval: Union[int, float], callback: Callable = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.interval = interval
@@ -40,7 +44,10 @@ class PausableTimer:
             self.running.set()
 
     def pause(self, reset: bool = False):
-        """Pauses the task execution."""
+        """Pauses the task execution.
+        Args:
+            reset: restart the loop execution?
+        """
         self.pauseEvent.clear()
         if reset:
             self.running.clear()
