@@ -8,7 +8,9 @@ class Variables:
     
     Args:
         variables: a dictionary with variables.
-        enabled: flag to control enabled state.
+        enabled: flag to enable or disable variables control.
+        interval: max wait time in seconds for a response.
+        supervise: a callback to be executed after wait time passes.
 
     Example:
         variables = Variable({
@@ -92,7 +94,7 @@ class Variables:
     def streamedSucessfully(self):
         """Should be called when variables streaming were successfully."""
         self.setStreamingStatus(True)
-        self.timer.reset(now=True)
+        self.timer.resume(now=True)
 
     def waitResponse(self):
         """Starts the supervise loop (timer)."""

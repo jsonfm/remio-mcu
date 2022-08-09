@@ -9,7 +9,7 @@ config = AutoConfig(search_path=".")
 
 serverSettings = {
     # "address": config("address", default="http://localhost:3000", cast=str),
-    "address": "http://172.17.172.11:3000/",
+    "address": "http://0.0.0.0:3000/",
     "request_timeout": 10,
 }
 

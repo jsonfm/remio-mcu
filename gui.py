@@ -29,11 +29,10 @@ class CustomMockup(QMainWindow, Mockup):
         super().__init__(*args, **kwargs)
         uic.loadUi("gui.ui", self)
         self.configureGUI()
-        self.configureControlButtons()
+        self.configureVariables()
         self.configureSerial()
         self.configureSocket()
         self.configureTimers()
-        self.configureVariables()
         self.configureMJPEG()
 
     # Configurations
@@ -45,11 +44,13 @@ class CustomMockup(QMainWindow, Mockup):
         self.ledSerial.clicked.connect(lambda value: self.serialReconnect(value))
         self.ledSocket.clicked.connect(lambda value: self.socketReconnect(value))
 
-    def configureControlButtons(self):
-        """Configures the control buttons."""
         self.btn1.clicked.connect(lambda value: self.updateVariables("btn1", value))
         self.btn2.clicked.connect(lambda value: self.updateVariables("btn2", value))
         self.btn3.clicked.connect(lambda value: self.updateVariables("btn3", value))
+        
+
+    def configureControlButtons(self):
+        """Configures the control buttons."""
 
     def configureSerial(self):
         """Configures serial on/emit events."""
@@ -62,7 +63,7 @@ class CustomMockup(QMainWindow, Mockup):
         """Configures socket on/emit events."""
         self.socket.on("connection", self.socketConnectionStatus)
         self.socket.on(SERVER_SENDS_DATA_EXPERIMENT, self.receiveVariables)
-        self.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_EXPERIMENT, lambda: self.variables.streamedSucessfully())
+        self.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_EXPERIMENT, self.variables.streamedSucessfully)
         self.socket.on(SERVER_REQUESTS_DATA_EXPERIMENT, lambda: self.streamVariables(lock=False))
         self.socket.on(SERVER_STREAMER_SET_PAUSE_EXPERIMENT, lambda pause: self.updateVideoPauseState(pause))
 
@@ -173,6 +174,8 @@ class CustomMockup(QMainWindow, Mockup):
         """Receives variables coming from the server."""
         self.variables.update(data)
         self.setVariablesOnGUI()
+        
+        self.serial["arduino"].write(self.variables.json())
         
         # Say to the server the data were received (OK)
         self.socket.emit(EXPERIMENT_NOTIFIES_DATA_WERE_RECEIVED_SERVER)

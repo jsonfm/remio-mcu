@@ -7,7 +7,6 @@ from settings import (
     cameraSettings,
     serialSettings,
 )
-from utils.timers import PausableTimer
 from utils.variables import Variables
 
 
@@ -35,17 +34,13 @@ class CustomMockup(Mockup):
         self.socket.on(EXPERIMENT_NOTIFIES_DATA_WERE_RECEIVED_SERVER, self.streamVariablesOK)
         self.socket.on(SERVER_REQUESTS_DATA_EXPERIMENT, lambda: self.streamVariables(lock=False))
 
-    def configureTimers(self):
-        """Configures some timers."""
-        self.variablesTimer = PausableTimer(3, self.superviseVariablesStreaming)
-
     def configureVariables(self):
         """Configures control variables."""
         self.variables = Variables({
             "btn1": False,
             "btn2": False,
             "btn3": False,
-        })
+        }, interval=3, supervise=self.superviseVariablesStreaming)
 
     def serialDataIncoming(self, data: str):
         """Reads incoming data from the serial device."""
@@ -64,13 +59,8 @@ class CustomMockup(Mockup):
 
     def superviseVariablesStreaming(self):
         """"Checks the variables updated status and restores the backup if necessary."""
-        # If variables not reached the web then restore the backup
-        if not self.variables.updated():
-            self.variables.restore()
-        
-        # Reset updated variables status and unlock the GUI
-        self.variables.setUpdated(False)
-        self.variablesTimer.pause(reset=True)
+        self.variables.checkStreamingFail()
+        self.variables.resetStreamingStatus()
 
     # Variables
     def receiveVariables(self, data: dict = {}):

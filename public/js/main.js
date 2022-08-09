@@ -1,59 +1,53 @@
-// ================= CONFIGURE GUI ELEMENTS ======================
+import { Variables } from "./utils/variables.js";
+import { CustomImage, CustomButton, ToogleButton, CustomSelect } from "./utils/widget.js"
 
+// ================= CONFIGURE GUI ELEMENTS ======================
 class CustomMockup {
     /** A class for manage a mockup with a GUI. */
     constructor(){ 
         this.loadGUI();
         this.configureGUI();
-        this.configureControlButtons();
-        this.configureSocket();
-        this.configureTimers();
         this.configureVariables();
+        this.configureSocket();
     }
 
     /** Loads the GUI */
     loadGUI = () => {
         this.image = new CustomImage("image");
-        this.connectSerialBtn = new ToogleButton("connectSerialBtn", "button is-light", "button is-light");
-        this.updateSerialBtn = new CustomButton("updateSerialBtn");
-        this.portSelect = new CustomSelect("portSelect");
-        this.btn1 = new ToogleButton("btn1", "btn btn-outline-dark", "btn btn-dark");
-        this.btn2 = new ToogleButton("btn2", "btn btn-outline-dark", "btn btn-dark");
-        this.btn3 = new ToogleButton("btn3", "btn btn-outline-dark", "btn btn-dark");
-        this.ledSocket = new ToogleButton("ledSocket", "btn btn-light btn-floating", "btn btn-success btn-floating");
-        // this.ledSerial = new ToogleButton("ledSerial", "led led-on mx-2", "led led-off mx-2");
+        // this.connectSerialBtn = new ToogleButton("connectSerialBtn", "button is-light", "button is-light");
+        // this.updateSerialBtn = new CustomButton("updateSerialBtn");
+        // this.portSelect = new CustomSelect("portSelect");
+        this.btn1 = new ToogleButton("btn1", "btn btn-dark", "btn btn-light");
+        this.btn2 = new ToogleButton("btn2", "btn btn-dark", "btn btn-light");
+        this.btn3 = new ToogleButton("btn3", "btn btn-dark", "btn btn-light");
+        this.ledSocket = new ToogleButton("ledSocket", "btn btn-light rounded-pill", "btn btn-success rounded-pill");
     }
 
-    /** Configures Buttons */
+    /** Configures GUI */
     configureGUI = () => {
+        
+        // Some visual elements
         this.ledSocket.setEnabled(false);
         setTimeout(this.SuperviseVariablesStreaming, 500);
-    }
 
-    /** Configures control buttons events. */
-    configureControlButtons = () => {
-        this.btn1.on("click", () => this.streamVariables("btn1", this.btn1.isChecked()));
-        this.btn2.on("click", () => this.streamVariables("btn2", this.btn2.isChecked()));
-        this.btn3.on("click", () => this.streamVariables("btn3", this.btn3.isChecked()));
+        // Control buttons
+        this.btn1.on("click", () => this.updateVariables("btn1", this.btn1.isChecked()));
+        this.btn2.on("click", () => this.updateVariables("btn2", this.btn2.isChecked()));
+        this.btn3.on("click", () => this.updateVariables("btn3", this.btn3.isChecked()));
     }
 
     /** Configures the socketio events */
     configureSocket = () => {
         this.socket = io.connect(SOCKETIO_SERVER_ADDRESS, {
             secure: false,
-            transports: ['websocket', 'polling', 'flashsocket']
+            transports: ['websocket', 'polling']
         });
         this.socket.on("connect", this.updateConnectionStatus);
         this.socket.on("disconnect", this.updateConnectionStatus);
 
-        this.socket.on(SERVER_STREAMS_VIDEO_WEB, this.updateVideo);
+        // this.socket.on(SERVER_STREAMS_VIDEO_WEB, this.updateVideo);
         this.socket.on(SERVER_SENDS_DATA_WEB, this.receiveVariables);
-        this.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_WEB, this.streamVariablesOK);
-    }
-
-    /** Configures timers */
-    configureTimers = () => {
-        this.variablesTimer = new ReusableTimer(this.SuperviseVariablesStreaming, 1000);
+        this.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_WEB, this.variables.streamedSucessfully);
     }
 
     /** Configures variables */
@@ -62,7 +56,7 @@ class CustomMockup {
             "btn1": false,
             "btn2": false,
             "btn3": false,
-        });
+        }, true, 3000, this.superviseVariablesStreaming);
     }
 
     /** locks the GUI elements  */
@@ -88,16 +82,10 @@ class CustomMockup {
     }
 
     /** Checks the variables updated status and restores the backup if necessary. */
-    SuperviseVariablesStreaming = () => {
-        // if variables were not received restore the backup.
-        if(!this.variables.updated()){
-            this.variables.restore();
-            this.setVariablesOnGUI();
-        }
-
-        // Reset updated variables status and unlock the GUI
-        this.variables.setUpdated(false);
-        this.variablesTimer.stop();
+    superviseVariablesStreaming = () => {
+        this.variables.checkStreamingFail();
+        this.setVariablesOnGUI();
+        this.variables.resetStreamingStatus();
         this.unlockGUI();
     }
 
@@ -107,9 +95,9 @@ class CustomMockup {
      */
     updateVideo = (frame) => {
         if(typeof frame === 'object'){
-            this.image.setBase64Source(frame["webcam"]);
+            this.image?.setBase64Source(frame["webcam"]);
         }else{
-            this.image.setBase64Source(frame);
+            this.image?.setBase64Source(frame);
         }
     }
 
@@ -133,32 +121,31 @@ class CustomMockup {
         this.variables.update(data);
         this.setVariablesOnGUI();
         this.socket.emit(WEB_NOTIFIES_DATA_WERE_RECEIVED_SERVER);
+        console.log("received: ", this.variables.values())
     }
 
     /**
      * Streams variables to the server
-     * @param {string} key - name of the variable.
-     * @param {*} value  - new value of the variable.
+     * @param {boolean} lock - lock the GUI?
      */
-    streamVariables = (key, value) => {
-        console.log('emittig --> ', this.variables.values());
-        this.variables.set(key, value);
-        this.variables.setUpdated(false);
-
-        // Send variables changes to the server
+    streamVariables = (lock = true) => {
         this.socket.emit(WEB_SENDS_DATA_SERVER, this.variables.values());
-
-        // Lock the GUI a wait for a response
-        this.lockGUI();
-        this.variablesTimer.start();
+        if (lock && this.variables.isEnabled()){
+            this.lockGUI();
+            this.variables.waitResponse();
+        }
     }
 
     /**
-     * It's called when the server notifies variables were received correctly.
+     * Updates variables
+     * @param {string} key - name of the variable.
+     * @param {*} value  - new value of the variable.
      */
-    streamVariablesOK = () => {
-        this.variables.setUpdated(true);
+    updateVariables = (key, value) => {
+        this.variables.set(key, value, true, false);
+        this.streamVariables();
     }
+
 }
 
 

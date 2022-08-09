@@ -13,7 +13,7 @@
 
 
 /** Custom Image class */
-class CustomImage {
+export class CustomImage {
     /**
      * Creates a custom image object.
      * @param {string} imageId - html image element id.
@@ -40,7 +40,7 @@ class CustomImage {
             this.image.src = src;
         }
     }
-
+    
     /**
      * set a base64 image source.
      * @param {string} b64 - image source on base64 format.
@@ -78,13 +78,13 @@ class Base{
 
 }
 
-class CustomButton extends Base {
+export class CustomButton extends Base {
     constructor(elementId){
         super(elementId);
     }
 }
 
-class ToogleButton extends Base {
+export class ToogleButton extends Base {
     constructor(elementId, onStyle, offStyle) {
         super(elementId);
         this.checked = false;
@@ -119,7 +119,7 @@ class ToogleButton extends Base {
     }
 }
 
-class CustomSelect extends Base {
+export class CustomSelect extends Base {
     constructor(elementId){
         super(elementId);
         this.items = [];
@@ -137,6 +137,25 @@ class CustomSelect extends Base {
             for(var i in items){
                 this.element.innerHTML+=`<option>${items[i]}</option>`
             }
+        }
+    }
+}
+
+
+class EventEmitter{
+    constructor(){
+        this.callbacks = {}
+    }
+
+    on(event, cb){
+        if(!this.callbacks[event]) this.callbacks[event] = [];
+        this.callbacks[event].push(cb)
+    }
+
+    emit(event, data){
+        let cbs = this.callbacks[event]
+        if(cbs){
+            cbs.forEach(cb => cb(data))
         }
     }
 }
