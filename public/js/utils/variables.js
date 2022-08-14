@@ -55,6 +55,7 @@ export class Variables {
         return this.variables[key];
     }
 
+    /** Checks if variables is enabled */
     isEnabled = () => {
         return this.enabled;
     }
@@ -66,14 +67,15 @@ export class Variables {
     setStreamingStatus = (value) => {
         this.streamingStatus = value;
     }
-
+    
+    /** Stringify variables */
     json = () => {
         return JSON.stringify(this.variables)
     }
 
     /** 
      * Updates variables values.
-     * @param {string} data - a json string with variables.
+     * @param {string | object} data - a json string with variables.
     */
     update = (data) => {
         let variables = data;
@@ -83,14 +85,6 @@ export class Variables {
         this.variables = {...variables};
         this.backup = {...variables};
         this.setStreamingStatus(true);
-    }
-
-    /** 
-     * Returns the updated status value
-     * @returns {boolean} - updated status
-    */
-    updated = () =>{
-        return this.updatedStatus;
     }
 
     /** Returns the current streaming status */

@@ -1,6 +1,7 @@
 import { Variables } from "./utils/variables.js";
 import { CustomImage, CustomButton, ToogleButton, CustomSelect } from "./utils/widget.js"
 
+
 // ================= CONFIGURE GUI ELEMENTS ======================
 class CustomMockup {
     /** A class for manage a mockup with a GUI. */
@@ -121,7 +122,6 @@ class CustomMockup {
         this.variables.update(data);
         this.setVariablesOnGUI();
         this.socket.emit(WEB_NOTIFIES_DATA_WERE_RECEIVED_SERVER);
-        console.log("received: ", this.variables.values())
     }
 
     /**

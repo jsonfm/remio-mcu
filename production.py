@@ -31,7 +31,7 @@ class CustomMockup(Mockup):
         """Configures socket on/emit events."""
         self.socket.on("connection", self.socketConnectionStatus)
         self.socket.on(EXPERIMENT_SENDS_DATA_SERVER, self.receiveVariables)
-        self.socket.on(EXPERIMENT_NOTIFIES_DATA_WERE_RECEIVED_SERVER, self.streamVariablesOK)
+        self.socket.on(EXPERIMENT_NOTIFIES_DATA_WERE_RECEIVED_SERVER, self.variables.streamedSucessfully)
         self.socket.on(SERVER_REQUESTS_DATA_EXPERIMENT, lambda: self.streamVariables(lock=False))
 
     def configureVariables(self):
@@ -65,7 +65,6 @@ class CustomMockup(Mockup):
     # Variables
     def receiveVariables(self, data: dict = {}):
         """Receives variables coming from the server."""
-        print("--> received: ", data)
         self.variables.update(data)
         self.serial["arduino"].write(self.variables.json())
         

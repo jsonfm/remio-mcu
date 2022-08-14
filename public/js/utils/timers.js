@@ -1,5 +1,10 @@
 /** A timer that executes a recurring task each certain time */
 export class PausableTimer {
+    /**
+     * 
+     * @param {number} interval - time on ms
+     * @param {function} callback - a function
+     */
     constructor(interval=1.0, callback=null){
         this.interval = interval;
         this.callback = callback;
@@ -24,17 +29,17 @@ export class PausableTimer {
         }
         this.start();
     }
-
+    /** Pauses the timer */
     pause() {
         this.stop();
     }
-
+    /** Stops the timer */
     stop(){
         if(this.timeout){
             clearTimeout(this.timeout);
         }
     }
-
+    /** Restarts the timer */
     reset(){
         this.stop();
         this.start();

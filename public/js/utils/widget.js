@@ -53,25 +53,39 @@ export class CustomImage {
 }
 
 class Base{
+    /**
+     * A base clase for objects
+     * @param {string} elementId 
+     */
     constructor(elementId){
         this.element = document.getElementById(elementId);
     }
 
+    /**
+     * A cool API for use addEventListener
+     * @param {string} event - a name
+     * @param {function} callback - a function
+     */
     on(event, callback){
         if(this.element){
             this.element.addEventListener(event, callback);
         }
     }
 
-    setEnabled(enabled){
+    /**
+     * Updates the enabled value
+     * @param {boolean} enabled
+    */
+    setEnabled(enabled=true){
         if(this.element){
             this.element.disabled = !enabled;
         }
     }
 
+    /** Returns the element value property */
     value(){
         if(this.element){
-            return this.element.value;
+            return this.element?.value;
         }
         return null;
     }
