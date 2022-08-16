@@ -5,7 +5,7 @@ export class PausableTimer {
      * @param {number} interval - time on ms
      * @param {function} callback - a function
      */
-    constructor(interval=1.0, callback=null){
+    constructor(interval=1000, callback=null){
         this.interval = interval;
         this.callback = callback;
         this.timeout = null;

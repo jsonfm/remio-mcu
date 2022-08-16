@@ -5,15 +5,18 @@ export class Variables {
     /**
      * Creates an inteligent variables manager (JSON).
      * @param {object} variables - a json with variables names and values.
+     * @param {boolean} enabled - enables or disables variables supervising.
+     * @param {number} interval - max wait time for a server response in mS.
+     * @param {function} supervise - a callback function for supervise variables streaming status.
      */
-    constructor(variables={}, enabled=true, interval=2.0, supervise){
+    constructor(variables={}, enabled=true, interval=2000, supervise){
         this.variables = variables;
         this.backup = {...variables};
         this.enabled = enabled;
         this.streamingStatus = false;
         this.timer = new PausableTimer(interval, supervise);
     }
-
+    /** It returns variables object. It will used when you pass a instance of this class to console.log()*/
     toString(){
         return this.variables;
     }
@@ -115,14 +118,14 @@ export class Variables {
         }
     }
 
-    /** Resets the streaming status. */
+    /** Resets the streaming status (Puts it to false). */
     resetStreamingStatus = () => {
         this.setStreamingStatus(false);
         this.timer.pause()
     }
 
+    /** Puts streaming status to true and resumes timer callback execution. */
     streamedSucessfully = () => {
-        console.log("streamed succesfully!");
         this.setStreamingStatus(true);
         this.timer.resume(true);
     }

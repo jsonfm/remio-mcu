@@ -124,11 +124,13 @@ class CustomMockup(QMainWindow, Mockup):
         json = data["arduino"]
         if "$" in json:
             print("message: ", json)
-        else:
+        elif "{" in json:
             self.variables.update(json)
             self.setVariablesOnGUI()
             self.variables.setStreamingStatus(False)
             self.streamVariables()
+        else:
+            print("Arduino says: ", json)
 
     def serialReconnect(self, value: bool):
         """Updates the serial port."""

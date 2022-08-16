@@ -92,31 +92,45 @@ class Base{
 
 }
 
+/** A custom buttom */
 export class CustomButton extends Base {
     constructor(elementId){
         super(elementId);
     }
 }
 
-export class ToogleButton extends Base {
+/** A Binary (Toggle) button */
+export class ToggleButton extends Base {
+    /**
+     * 
+     * @param {string} elementId - the id of the element
+     * @param {string} onStyle - a css class name
+     * @param {string} offStyle - a css class name
+     */
     constructor(elementId, onStyle, offStyle) {
         super(elementId);
         this.checked = false;
         this.onStyle = onStyle;
         this.offStyle = offStyle;
-        this.on("click", this.toogle.bind(this));
+        this.on("click", this.toggle.bind(this));
         this.updateStyle();
     }
 
-    setChecked(checked){
+    /**
+     * Updates checked value of the button
+     * @param {boolean} checked - checked value
+     */
+    setChecked(checked=true){
         this.checked = checked;
         this.updateStyle();
     }
 
+    /** Returns checked statuss */
     isChecked(){
         return this.checked;
     }
 
+    /** Updates class styles */
     updateStyle(){
         if(this.element){
            if(this.isChecked()){
@@ -127,7 +141,8 @@ export class ToogleButton extends Base {
         }
     }
 
-    toogle(){
+    /** Toggles the check status */
+    toggle(){
         this.checked = !this.checked;
         this.updateStyle();
     }

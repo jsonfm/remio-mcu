@@ -1,5 +1,5 @@
 import { Variables } from "./utils/variables.js";
-import { CustomImage, CustomButton, ToogleButton, CustomSelect } from "./utils/widget.js"
+import { CustomImage, CustomButton, ToggleButton, CustomSelect } from "./utils/widget.js"
 
 
 // ================= CONFIGURE GUI ELEMENTS ======================
@@ -15,13 +15,10 @@ class CustomMockup {
     /** Loads the GUI */
     loadGUI = () => {
         this.image = new CustomImage("image");
-        // this.connectSerialBtn = new ToogleButton("connectSerialBtn", "button is-light", "button is-light");
-        // this.updateSerialBtn = new CustomButton("updateSerialBtn");
-        // this.portSelect = new CustomSelect("portSelect");
-        this.btn1 = new ToogleButton("btn1", "btn btn-dark", "btn btn-light");
-        this.btn2 = new ToogleButton("btn2", "btn btn-dark", "btn btn-light");
-        this.btn3 = new ToogleButton("btn3", "btn btn-dark", "btn btn-light");
-        this.ledSocket = new ToogleButton("ledSocket", "btn btn-light rounded-pill", "btn btn-success rounded-pill");
+        this.btn1 = new ToggleButton("btn1", "btn btn-dark", "btn btn-light");
+        this.btn2 = new ToggleButton("btn2", "btn btn-dark", "btn btn-light");
+        this.btn3 = new ToggleButton("btn3", "btn btn-dark", "btn btn-light");
+        this.ledSocket = new ToggleButton("ledSocket", "btn btn-light rounded-pill", "btn btn-success rounded-pill");
     }
 
     /** Configures GUI */
@@ -39,16 +36,17 @@ class CustomMockup {
 
     /** Configures the socketio events */
     configureSocket = () => {
+        // Initalize socketio
         this.socket = io.connect(SOCKETIO_SERVER_ADDRESS, {
             secure: false,
             transports: ['websocket', 'polling']
         });
+        // Socketio Events
         this.socket.on("connect", this.updateConnectionStatus);
         this.socket.on("disconnect", this.updateConnectionStatus);
-
-        // this.socket.on(SERVER_STREAMS_VIDEO_WEB, this.updateVideo);
         this.socket.on(SERVER_SENDS_DATA_WEB, this.receiveVariables);
         this.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_WEB, this.variables.streamedSucessfully);
+        // this.socket.on(SERVER_STREAMS_VIDEO_WEB, this.updateVideo);
     }
 
     /** Configures variables */
@@ -82,17 +80,20 @@ class CustomMockup {
         this.btn3.setChecked(data["btn3"]);
     }
 
-    /** Checks the variables updated status and restores the backup if necessary. */
+    /** Checks the variables streamed status and restores the backup if necessary. */
     superviseVariablesStreaming = () => {
+        // Confirms variables streaming or restores their last values
         this.variables.checkStreamingFail();
         this.setVariablesOnGUI();
+
+        // Puts streaming status to false and unlocks the GUI
         this.variables.resetStreamingStatus();
         this.unlockGUI();
     }
 
     /** 
      * Updates video frame mjpeg.
-     * @param {String} frame - a base64 encoded video frame.
+     * @param {string} frame - a base64 encoded video frame.
      */
     updateVideo = (frame) => {
         if(typeof frame === 'object'){
@@ -103,7 +104,7 @@ class CustomMockup {
     }
 
     /**
-     * It's called when a socket connection ocurrs.
+     * It's called when a socket connection event ocurrs.
      */
     updateConnectionStatus = () => {
         const status = this.socket.connected;
@@ -115,7 +116,7 @@ class CustomMockup {
     }
 
     /** 
-     * Receives variables coming from the server. 
+     * Receives variables coming from the socketio server. 
      * @param {string} data - received variables
      * */
      receiveVariables = (data) => {
@@ -125,7 +126,7 @@ class CustomMockup {
     }
 
     /**
-     * Streams variables to the server
+     * Streams variables to the socketio server
      * @param {boolean} lock - lock the GUI?
      */
     streamVariables = (lock = true) => {
@@ -137,7 +138,7 @@ class CustomMockup {
     }
 
     /**
-     * Updates variables
+     * Updates variables and stream they to the socketio server
      * @param {string} key - name of the variable.
      * @param {*} value  - new value of the variable.
      */
