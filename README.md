@@ -1,5 +1,5 @@
 # REMIO MOCKUP TEMPLATE
-This is an python remio mockup template, estructured to be used as experiment of a remote lab.
+This is a python remio mockup template, structured to be used as experiment of a remote lab.
 
 ## GUI
 This project was made with PyQt5:
