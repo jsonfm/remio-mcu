@@ -1,4 +1,4 @@
-# REMIO MOCKUP TEMPLATE
+## REMIO MOCKUP TEMPLATE ⭐️
 This is a python remio mockup template, structured to be used as experiment of a remote lab.
 
 ## GUI
