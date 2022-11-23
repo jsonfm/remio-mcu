@@ -15,10 +15,11 @@ class CustomMockup {
     /** Loads the GUI */
     loadGUI = () => {
         this.image = new CustomImage("image");
-        this.btn1 = new ToggleButton("btn1", "btn btn-dark", "btn btn-light");
-        this.btn2 = new ToggleButton("btn2", "btn btn-dark", "btn btn-light");
-        this.btn3 = new ToggleButton("btn3", "btn btn-dark", "btn btn-light");
-        this.ledSocket = new ToggleButton("ledSocket", "btn btn-light rounded-pill", "btn btn-success rounded-pill");
+        this.btn1 = new ToggleButton("btn1", "btn btn-light", "btn btn-dark");
+        this.btn2 = new ToggleButton("btn2", "btn btn-light", "btn btn-dark");
+        this.btn3 = new ToggleButton("btn3", "btn btn-light", "btn btn-dark");
+        this.ledSocket = new ToggleButton("ledSocket", "btn btn-success rounded-pill", "btn btn-light rounded-pill");
+        console.log("led: ", this.ledSocket);
     }
 
     /** Configures GUI */
@@ -109,9 +110,11 @@ class CustomMockup {
     updateConnectionStatus = () => {
         const status = this.socket.connected;
         this.ledSocket.setChecked(status);
+        
         if(status){
-            this.socket.emit(WEB_JOINS_ROOM_SERVER, MOCKUP_ROOM);
+            this.socket.volatile.emit(WEB_JOINS_ROOM_SERVER, MOCKUP_ROOM);
             this.socket.emit(WEB_REQUESTS_DATA_SERVER);
+            console.log("requesting for updates!")
         }
     }
 
@@ -122,7 +125,7 @@ class CustomMockup {
      receiveVariables = (data) => {
         this.variables.update(data);
         this.setVariablesOnGUI();
-        this.socket.emit(WEB_NOTIFIES_DATA_WERE_RECEIVED_SERVER);
+        this.socket.volatile.emit(WEB_NOTIFIES_DATA_WERE_RECEIVED_SERVER);
     }
 
     /**
@@ -130,7 +133,7 @@ class CustomMockup {
      * @param {boolean} lock - lock the GUI?
      */
     streamVariables = (lock = true) => {
-        this.socket.emit(WEB_SENDS_DATA_SERVER, this.variables.values());
+        this.socket.volatile.emit(WEB_SENDS_DATA_SERVER, this.variables.values());
         if (lock && this.variables.isEnabled()){
             this.lockGUI();
             this.variables.waitResponse();

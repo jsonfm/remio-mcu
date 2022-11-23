@@ -12,6 +12,7 @@ from settings import (
     streamSettings,
     cameraSettings,
     serialSettings,
+    config
 )
 from utils.variables import Variables
 
@@ -20,7 +21,7 @@ ui_path = os.path.dirname(os.path.abspath(__file__))
 ui_file = os.path.join(ui_path, "gui.ui")
 
 
-MOCKUP_ROOM = "room-x"
+EXPERIMENT_ROOM = config("SOCKETIO_SERVER_ROOM", default="ROOM_X", cast=str)
 
 
 class CustomMockup(QMainWindow, Mockup):
@@ -146,7 +147,7 @@ class CustomMockup(QMainWindow, Mockup):
         status = self.socket.isConnected()
         self.ledSocket.setChecked(status)
         if status: 
-            self.socket.emit(EXPERIMENT_JOINS_ROOM_SERVER, MOCKUP_ROOM)
+            self.socket.emit(EXPERIMENT_JOINS_ROOM_SERVER, EXPERIMENT_ROOM)
 
     def socketReconnect(self, value: bool = True):
         """Updates the socketio connection."""

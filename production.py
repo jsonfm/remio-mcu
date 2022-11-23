@@ -6,11 +6,12 @@ from settings import (
     streamSettings,
     cameraSettings,
     serialSettings,
+    config
 )
 from utils.variables import Variables
 
 
-MOCKUP_ROOM = "room-x"
+EXPERIMENT_ROOM = config("SOCKETIO_SERVER_ROOM", default="ROOM_X", cast=str)
 
 
 class CustomMockup(Mockup):
@@ -55,7 +56,7 @@ class CustomMockup(Mockup):
     def socketConnectionStatus(self):
         """Shows the connection socket status."""
         if self.socket.isConnected(): 
-            self.socket.emit(EXPERIMENT_JOINS_ROOM_SERVER, MOCKUP_ROOM)
+            self.socket.emit(EXPERIMENT_JOINS_ROOM_SERVER, EXPERIMENT_ROOM)
 
     def superviseVariablesStreaming(self):
         """"Checks the variables updated status and restores the backup if necessary."""
