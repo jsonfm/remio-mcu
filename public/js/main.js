@@ -1,6 +1,4 @@
 import { Variables } from "./utils/variables.js";
-import { CustomImage, CustomButton, ToggleButton, CustomSelect } from "./utils/widget.js"
-
 
 // ================= CONFIGURE GUI ELEMENTS ======================
 class CustomMockup {
@@ -14,12 +12,11 @@ class CustomMockup {
 
     /** Loads the GUI */
     loadGUI = () => {
-        this.image = new CustomImage("image");
-        this.btn1 = new ToggleButton("btn1", "btn btn-light", "btn btn-dark");
-        this.btn2 = new ToggleButton("btn2", "btn btn-light", "btn btn-dark");
-        this.btn3 = new ToggleButton("btn3", "btn btn-light", "btn btn-dark");
-        this.ledSocket = new ToggleButton("ledSocket", "btn btn-success rounded-pill", "btn btn-light rounded-pill");
-        console.log("led: ", this.ledSocket);
+        // this.image = new CustomImage("image");
+        this.btn1 = new jsqt.Toggle("btn1", "btn btn-light", "btn btn-dark");
+        this.btn2 = new jsqt.Toggle("btn2", "btn btn-light", "btn btn-dark");
+        this.btn3 = new jsqt.Toggle("btn3", "btn btn-light", "btn btn-dark");
+        this.ledSocket = new jsqt.Toggle("ledSocket", "btn btn-success rounded-pill", "btn btn-light rounded-pill");
     }
 
     /** Configures GUI */
