@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QLabel
+from PyQt6.QtGui import QPixmap, QImage
 import numpy as np
 import cv2
 
@@ -19,13 +19,13 @@ class QImageLabel(QLabel):
         Args:
             array: image array
             width: scaled width
-            width: scaled height
+            height: scaled height
         """
         rgb = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
         h, w, ch = rgb.shape
         bytesPerLine = ch * w
-        qimage = QImage(rgb.data, w, h, bytesPerLine, QImage.Format_RGB888)
-        qimage = qimage.scaled(width, height, Qt.KeepAspectRatio)
+        qimage = QImage(rgb.data, w, h, bytesPerLine, QImage.Format.Format_RGB888)
+        qimage = qimage.scaled(width, height, Qt.AspectRatioMode.KeepAspectRatio)
         qpixmap = QPixmap.fromImage(qimage)
         return qpixmap
 

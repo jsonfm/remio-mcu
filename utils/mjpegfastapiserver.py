@@ -28,12 +28,16 @@ class MJPEGAsyncServer:
         self.server: FastAPI = FastAPI()
         self.server.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
         self.server.add_route(self.endpoint, self.streaming_route)
-        self.thread = Thread(target=self.run, daemon=True)
+        self.thread: Thread = Thread(target=self.run, daemon=True)
         self.loop = None
 
     def start(self):
         """Starts server loop on a separated thread."""
         self.thread.start()
+
+    def stop(self):
+        """Stops server"""
+        self.thread.join(1)
 
     async def camera_read(self):
         """Camera read loop."""

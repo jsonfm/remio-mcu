@@ -6,282 +6,111 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>506</width>
-    <height>265</height>
+    <width>566</width>
+    <height>294</height>
    </rect>
   </property>
-  <property name="baseSize">
-   <size>
-    <width>0</width>
-    <height>0</height>
-   </size>
-  </property>
   <property name="windowTitle">
-   <string>Example</string>
+   <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/*----- GLOBAL COMPONENTS -----*/
-MainWindow {
-	margin: 0;
-	padding: 0;
-	background: rgb(15, 15, 15);
-	color: white;
-}
-
-#centralwidget{
-	padding: 0;
-	background: rgb(15, 15, 15);
-	color: white;
+   <string notr="true">QMainWindow {
+	background-color: white;
 }
 
 QLabel {
-	color: white;
+	color: gray;
 }
+
 QPushButton {
-	color: rgb(222, 222, 222);
-	background: rgb(33, 33, 33);
-	font-size: 12px;
-	height: 25px;
-	min-width: 15px;
-	margin: 2px 0;
-	border-radius: 3px;
+	color: gray;
 }
 
-QPushButton:checked,
-QPushButton:pressed,
-QPushButton:focus {
-	background: rgb(234, 234, 234);
-	color: black;
-	margin: 2px 0;
-	border-radius: 3px;
+#centralwidget {
+	background: transparent;
 }
 
-/* ---- BUTTONS ---*/
-#streamBtn:checked {
-	background: rgb(232, 104, 45);
-}
-#pauseBtn:checked {
-	background: rgb(196, 0, 76);
-}
 
-/*--- IMAGES ---*/
 #qimage {
-background: rgb(27, 27, 27);
-}
 
-#slider {
-margin-top: 10px;
-}
-/*--- LEDS STYLES ----*/
-#ledSerial, #ledSocket {
-	max-width: 12px;
-	max-height: 14px;
-	border-radius: 6px;
-	margin: 0;
-	background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.505, fy:0.505682, stop:0.325123 rgba(126, 126, 126, 255), stop:1 rgba(88, 88, 88, 255))
-}
-
-#ledSerial:checked, #ledSocket:checked {
-	color: white;
-	background: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.505, fy:0.505682, stop:0.325123 rgba(80, 195, 210, 255), stop:1 rgba(43, 104, 115, 255));
 }</string>
   </property>
-  <property name="tabShape">
-   <enum>QTabWidget::Triangular</enum>
-  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,1">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
+   <layout class="QVBoxLayout" name="verticalLayout_4">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
+       <number>4</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="6">
-        <item>
-         <widget class="QLabel" name="qimage">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>MAQUETA MCU</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="2,1,2,0,0,0,0,0,0">
-        <property name="spacing">
-         <number>4</number>
-        </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
         <property name="leftMargin">
          <number>4</number>
         </property>
         <property name="topMargin">
-         <number>10</number>
+         <number>4</number>
         </property>
         <property name="rightMargin">
-         <number>2</number>
+         <number>4</number>
         </property>
         <property name="bottomMargin">
-         <number>10</number>
+         <number>4</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
-          <property name="spacing">
-           <number>5</number>
-          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0">
           <item>
-           <widget class="QPushButton" name="ledSerial">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QLabel" name="qimage">
             <property name="text">
              <string/>
             </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="maximumSize">
-             <size>
-              <width>45</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Serial</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="ledSocket">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_3">
-            <property name="maximumSize">
-             <size>
-              <width>45</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Socket</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QSlider" name="speedSlider">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QPushButton" name="playBtn">
+                <property name="text">
+                 <string>Play</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QComboBox" name="devices"/>
-        </item>
-        <item>
-         <widget class="Line" name="line">
-          <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
-          </property>
-          <property name="lineWidth">
-           <number>1</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSlider" name="slider">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btn1">
-          <property name="text">
-           <string>Button 1</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btn2">
-          <property name="text">
-           <string>Button 2</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btn3">
-          <property name="text">
-           <string>Button 3</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QPushButton" name="pauseBtn">
+           <widget class="QPushButton" name="dirBtn">
             <property name="text">
-             <string>Pause</string>
+             <string>Dir</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -289,14 +118,53 @@ margin-top: 10px;
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="streamBtn">
+           <widget class="QPushButton" name="r1Btn">
             <property name="text">
-             <string>Stream</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
+             <string>r1 = 3cm</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="r2Btn">
+            <property name="text">
+             <string>r2 = 6cm</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="r3Btn">
+            <property name="text">
+             <string>r3 = 9cm</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="speedLabel">
+              <property name="font">
+               <font>
+                <pointsize>40</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>00.00</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>RPM</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>

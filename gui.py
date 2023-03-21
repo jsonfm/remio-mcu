@@ -5,9 +5,9 @@ import os
 import sys
 
 ## 
-from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QApplication
-from PyQt5.QtCore import QTimer
+from PyQt6 import uic
+from PyQt6.QtWidgets import QMainWindow, QApplication
+from PyQt6.QtCore import QTimer
 from remio import Mockup
 
 #
@@ -38,7 +38,7 @@ class CustomMockup(QMainWindow, Mockup):
         uic.loadUi("gui.ui", self)
         self.configureGUI()
         self.configureVariables()
-        self.configureSerial()
+        # self.configureSerial()
         self.configureSocket()
         self.configureTimers()
         self.configureMJPEG()
@@ -47,14 +47,16 @@ class CustomMockup(QMainWindow, Mockup):
     def configureGUI(self):
         """Configures buttons events."""
         self.image = QImageLabel(self.qimage)
-        self.pauseBtn.clicked.connect(lambda value: self.updateVideoPauseState(value))
-        self.streamBtn.clicked.connect(lambda value: self.streamer.setPause(value))
-        self.ledSerial.clicked.connect(lambda value: self.serialReconnect(value))
-        self.ledSocket.clicked.connect(lambda value: self.socketReconnect(value))
-
-        self.btn1.clicked.connect(lambda value: self.updateVariables("btn1", value))
-        self.btn2.clicked.connect(lambda value: self.updateVariables("btn2", value))
-        self.btn3.clicked.connect(lambda value: self.updateVariables("btn3", value))
+        # self.pauseBtn.clicked.connect(lambda value: self.updateVideoPauseState(value))
+        # self.streamBtn.clicked.connect(lambda value: self.streamer.setPause(value))
+        # self.ledSerial.clicked.connect(lambda value: self.serialReconnect(value))
+        # self.ledSocket.clicked.connect(lambda value: self.socketReconnect(value))
+        self.speedSlider.valueChanged.connect(lambda value: self.speedLabel.setText(f"{value * 0.3: .2f}"))
+        self.speedSlider.sliderReleased.connect(lambda: self.updateVariables("speed", self.speedSlider.value() * 0.3))
+        self.playBtn.clicked.connect(lambda: self.updateVariables("play", self.playBtn.isChecked()))
+        self.r1Btn.clicked.connect(lambda value: self.updateVariables("r1Btn", value))
+        self.r2Btn.clicked.connect(lambda value: self.updateVariables("r2Btn", value))
+        self.r3Btn.clicked.connect(lambda value: self.updateVariables("r3Btn", value))
         
 
     def configureControlButtons(self):
@@ -79,14 +81,16 @@ class CustomMockup(QMainWindow, Mockup):
         """Configures some timers."""
         self.videoTimer = QTimer()
         self.videoTimer.timeout.connect(self.updateVideo)
-        self.videoTimer.start(1000 // 15)  # 1000 // FPS
+        self.videoTimer.start(1000 // 12)  # 1000 // FPS
 
     def configureVariables(self):
         """Configures control variables."""
         self.variables = Variables({
-            "btn1": False,
-            "btn2": False,
-            "btn3": False,
+            "speed": 0,
+            "play": False,
+            "r1Btn": False,
+            "r2Btn": False,
+            "r3Btn": False,
         }, interval=3, supervise=self.superviseVariablesStreaming)
         # self.variables.setEnabled(False)
 
@@ -98,22 +102,22 @@ class CustomMockup(QMainWindow, Mockup):
     # GUI
     def lockGUI(self):
         """Locks the GUI elements."""
-        self.btn1.setEnabled(False)
-        self.btn2.setEnabled(False)
-        self.btn3.setEnabled(False)
+        self.r1Btn.setEnabled(False)
+        self.r2Btn.setEnabled(False)
+        self.r3Btn.setEnabled(False)
     
     def unlockGUI(self):
         """Unlocks the GUI elements."""
-        self.btn1.setEnabled(True)
-        self.btn2.setEnabled(True)
-        self.btn3.setEnabled(True)
+        self.r1Btn.setEnabled(True)
+        self.r2Btn.setEnabled(True)
+        self.r3Btn.setEnabled(True)
 
     def setVariablesOnGUI(self):
         """Sets variables on the GUI."""
         variables = self.variables.values()
-        self.btn1.setChecked(variables["btn1"])
-        self.btn2.setChecked(variables["btn2"])
-        self.btn3.setChecked(variables["btn3"])
+        self.r1Btn.setChecked(variables["r1Btn"])
+        self.r2Btn.setChecked(variables["r2Btn"])
+        self.r3Btn.setChecked(variables["r3Btn"])
 
     # Serial
     def serialPortsUpdate(self, ports: list):
@@ -201,6 +205,7 @@ class CustomMockup(QMainWindow, Mockup):
 
         # Stream variables
         self.streamVariables()
+        print("variables: ", self.variables.json())
 
     def streamVariables(self, lock: bool = True):
         """Streams variables to the server."""
@@ -216,7 +221,7 @@ class CustomMockup(QMainWindow, Mockup):
         """Stops running threads/processes when close the window."""
         self.stop()
         self.variables.stop()
-        self.mjpegserver.stop(stop_camera=False)
+        self.mjpegserver.stop()
 
 
 if __name__ == "__main__":
@@ -235,4 +240,4 @@ if __name__ == "__main__":
         wait=False
     )
     experiment.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
