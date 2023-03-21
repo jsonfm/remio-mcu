@@ -1,5 +1,3 @@
-import { Variables } from "./utils/variables.js";
-
 // ================= CONFIGURE GUI ELEMENTS ======================
 class CustomMockup {
     /** A class for manage a mockup with a GUI. */
@@ -80,6 +78,7 @@ class CustomMockup {
 
     /** Checks the variables streamed status and restores the backup if necessary. */
     superviseVariablesStreaming = () => {
+        console.log("streamed: ", this.variables.streamed())
         // Confirms variables streaming or restores their last values
         this.variables.checkStreamingFail();
         this.setVariablesOnGUI();

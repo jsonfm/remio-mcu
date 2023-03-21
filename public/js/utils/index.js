@@ -1,0 +1,188 @@
+/** A timer that executes a recurring task each certain time */
+class PausableTimer {
+    /**
+     * 
+     * @param {number} interval - time on ms
+     * @param {function} callback - a function
+     */
+    constructor(interval=1000, callback=null){
+        this.interval = interval;
+        this.callback = callback;
+        this.timeout = null;
+    }
+
+    /**
+     * Starts the timer
+     */
+    start = () => {
+        this.stop();
+        this.timeout = setTimeout(this.callback, this.interval);
+    }
+
+    /**
+     * Resumes the timeout
+     * @param {boolean} now - resume now ? 
+     */
+    resume = (now=false) => {
+        if(now){
+            this.callback();
+        }
+        this.start();
+    }
+    /** Pauses the timer */
+    pause = () => {
+        this.stop();
+    }
+    /** Stops the timer */
+    stop = () => {
+        if(!!this.timeout){
+            clearTimeout(this.timeout);
+        }
+    }
+    /** Restarts the timer */
+    reset = () => {
+        this.stop();
+        this.start();
+    }
+}
+
+class Variables {
+    /**
+     * Creates an inteligent variables manager (JSON).
+     * @param {object} variables - a json with variables names and values.
+     * @param {boolean} enabled - enables or disables variables supervising.
+     * @param {number} interval - max wait time for a server response in mS.
+     * @param {function} supervise - a callback function for supervise variables streaming status.
+     */
+    constructor(variables={}, enabled=true, interval=2000, supervise){
+        this.variables = variables;
+        this.backup = {...variables};
+        this.enabled = enabled;
+        this.streamingStatus = false;
+        this.timer = new PausableTimer(interval, supervise);
+    }
+    /** It returns variables object. It will used when you pass a instance of this class to console.log()*/
+    toString(){
+        return this.variables;
+    }
+
+    /**
+     * Restores the variables values using the backup.
+     */
+    restore(){
+        this.variables = {...this.backup};
+    }
+
+    /** 
+     * Returns the variables values.
+    */
+    values(){
+        return this.variables;
+    }
+
+    /**
+     * Updates a specific variable value
+     * @param {string} key - the variable name
+     * @param {*} value - a value for the current variable
+     * @param {boolean} backup - save the previous variables values?
+     * @param {boolean} streamingStatus - flag
+     */
+    set = (key, value, backup = true, streamingStatus = false) => {
+        if(backup){
+            this.backup = {...this.variables};
+        }
+        this.variables[key] = value;
+        this.setStreamingStatus(streamingStatus);
+    }
+    
+    /**
+     * Returns a value of the variables JSON given a key
+     * @param {string} key - the current variable name
+     */
+    get = (key) => {
+        return this.variables[key];
+    }
+
+    /** Checks if variables is enabled */
+    isEnabled = () => {
+        return this.enabled;
+    }
+
+    /**
+     * Updates the updated status.
+     * @param {boolean} value.
+     */
+    setStreamingStatus = (value) => {
+        this.streamingStatus = value;
+    }
+    
+    /** Stringify variables */
+    json = () => {
+        return JSON.stringify(this.variables)
+    }
+
+    /** 
+     * Updates variables values.
+     * @param {string | object} data - a json string with variables.
+    */
+    update = (data) => {
+        let variables = data;
+        if (typeof variables === 'string'){
+            variables = JSON.parse(variables);
+        }
+        this.variables = {...variables};
+        this.backup = {...variables};
+        this.setStreamingStatus(true);
+    }
+
+    /** Returns the current streaming status */
+    streamed = () => {
+        return this.streamingStatus;
+    }
+
+    /**
+     * Updates the streaming status.
+     * @param {boolean} value - the new streaming status value.
+     */
+    setStreamingStatus = (value=true) => {
+        this.streamingStatus = value;
+        this.timer.reset(true);
+    }
+
+    /**
+     * Waits for a response
+     */
+    waitResponse = () => {
+        this.timer.resume(false);
+    }
+
+    /** Checks if variables were streamed, else restores their last values. */
+    checkStreamingFail = () => {
+        if(!this.streamed()){
+            this.restore();
+        }
+    }
+
+    /** Resets the streaming status (Puts it to false). */
+    resetStreamingStatus = () => {
+        this.setStreamingStatus(false);
+        this.timer.pause()
+    }
+
+    /** Puts streaming status to true and resumes timer callback execution. */
+    streamedSucessfully = () => {
+        this.setStreamingStatus(true);
+        this.timer.stop();
+        if(!!this.timer.callback){
+            this.timer.callback();
+        }
+    }
+
+    /** Stops secondaries processes like timeouts or intervals. */
+    stop = () => {
+        this.timer?.stop()
+    }
+
+
+}
+

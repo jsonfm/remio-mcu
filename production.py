@@ -8,6 +8,7 @@ from settings import (
     serialSettings,
     config
 )
+from utils.mjpegfastapiserver import MJPEGAsyncServer
 from utils.variables import Variables
 
 
@@ -19,10 +20,11 @@ class CustomMockup(Mockup):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # self.configureTimers()
+        self.configureVariables()
         self.configureSerial()
         self.configureSocket()
-        self.configureTimers()
-        self.configureVariables()
+        self.configureMJPEG()
 
     def configureSerial(self):
         """Configures serial on/emit events."""
@@ -42,6 +44,11 @@ class CustomMockup(Mockup):
             "btn2": False,
             "btn3": False,
         }, interval=3, supervise=self.superviseVariablesStreaming)
+
+    def configureMJPEG(self):
+        """Configures a MJPEG Server for streaming video."""
+        self.mjpegserver = MJPEGAsyncServer(self.camera["webcam"], fps=15)
+        self.mjpegserver.start()
 
     def serialDataIncoming(self, data: str):
         """Reads incoming data from the serial device."""
@@ -98,6 +105,6 @@ if __name__ == "__main__":
         camera=True, 
         serial=True, 
         socket=True, 
-        streamer=True, 
+        streamer=False, 
         wait=True
     )

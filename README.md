@@ -27,33 +27,33 @@ The present project uses socketio for remote control.
 └── settings.py
 ```
 
-## Installation
-First you probabily want to create and activate a virtual env
+### Installation
+First you probabily want to create and activate a virtual env:
 ```bash
 python3 -m venv venv
 
 source venv/bin/activate
 ```
 
-## Dependencies
+### Dependencies
 After you set the virutal env, you should install dependencies as follows:
 ```
 pip install -r requirements.txt
 ```
 
-## Run Mockup GUI
+### Run Mockup GUI
 This experiment uses PyQt5 framework to provide a GUI.
 ```
 python gui.py
 ```
 
-## Run Mockup without GUI (Production)
+### Run Mockup without GUI (Production)
 This experiment also, could be controlled remotly, then you probably not want to use the local gui.
 
 ```
 python production.py
 ```
-## SocketIO Server
+### SocketIO Server
 A socketio server was added for do some tests.
 ```
 python run_server.py

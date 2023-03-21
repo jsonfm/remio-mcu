@@ -1,11 +1,18 @@
 """Example experiment with GUI."""
+
+# OS
 import os
 import sys
+
+## 
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import QTimer
-from remio import Mockup, MJPEGServer
+from remio import Mockup
+
+#
 from utils.widgets import QImageLabel
+from utils.mjpegfastapiserver import MJPEGAsyncServer
 from server.routes import *
 from settings import (
     serverSettings,
@@ -85,7 +92,7 @@ class CustomMockup(QMainWindow, Mockup):
 
     def configureMJPEG(self):
         """Configures a MJPEG Server for streaming video."""
-        self.mjpegserver = MJPEGServer(self.camera["webcam"], fps=15)
+        self.mjpegserver = MJPEGAsyncServer(self.camera["webcam"], fps=15)
         self.mjpegserver.start()
 
     # GUI
@@ -175,6 +182,7 @@ class CustomMockup(QMainWindow, Mockup):
     # Variables
     def receiveVariables(self, data: dict = {}):
         """Receives variables coming from the server."""
+        # print("received: ", data)
         self.variables.update(data)
         self.setVariablesOnGUI()
         
