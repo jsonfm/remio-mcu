@@ -1,15 +1,18 @@
-## REMIO MOCKUP TEMPLATE ⭐️
-This is a python remio mockup template, structured to be used as experiment of a remote lab.
+### 🌏🧪 Remio Mockup Template
+This is a python template for making experiment with `remio` library. It gives to you a project structure, a some utils for developing quickly remote laboratory projects.
 
-## GUI
-This project was made with PyQt5:
+### 🎨 GUI
+The project includes a simple GUI made with `PyQt5`. It looks as follows:
 <img src="./docs/gui.png" style="margin: 1rem 0;">
 
-## Communications Schema
-The present project uses socketio for remote control.
+You could edit it according to your needs. I recommed to you use `QtDesigner` program which simplifies the GUI creation proccess. 
+
+### 💬 Communications Schema
+The project uses a simple mechanism to establish bidirectional communications in real time, using the `socketio` protocol/library.
 <img src="./docs/communications.png" style="margin: 1rem 0;">
 
-## Structure
+### 🗂️ Structure
+Some folders were created to help you structure the project:
 ```
 .
 ├── arduino
@@ -27,33 +30,38 @@ The present project uses socketio for remote control.
 └── settings.py
 ```
 
-### Installation
-First you probabily want to create and activate a virtual env:
+### ⚙️ Installation
+Clone the repository:
+```
+git clone https://github.com/jsonfm/remio-mockup-template.git [your-project-name]
+```
+
+Create and activate a virtual environment:
 ```bash
 python3 -m venv venv
 
 source venv/bin/activate
 ```
 
-### Dependencies
-After you set the virutal env, you should install dependencies as follows:
+### ⚒️ Dependencies
+After you set the virutal env, install dependencies:
 ```
 pip install -r requirements.txt
 ```
 
-### Run Mockup GUI
+### ⚡️ Development
 This experiment uses PyQt5 framework to provide a GUI.
 ```
 python gui.py
 ```
 
-### Run Mockup without GUI (Production)
-This experiment also, could be controlled remotly, then you probably not want to use the local gui.
+### 🚀 Production
+To run the experiment without the local GUI (production), you could use the `product.py` file:
 
 ```
 python production.py
 ```
-### SocketIO Server
+### ✨ SocketIO Server
 A socketio server was added for do some tests.
 ```
 python run_server.py

@@ -5,10 +5,10 @@ from server.routes import *
 
 # ENV PATH
 config = AutoConfig(search_path=".")
-print("config: ", config)
+
 # ------------------------ SERVER SETTINGS ------------------------------------
 serverSettings: dict = {
-    # "address": config('SOCKETIO_SERVER_ADDRESS', default="http://localhost:3000", cast=str),
+    "address": config('SOCKETIO_SERVER_ADDRESS', default="http://localhost:3000", cast=str),
     "request_timeout": 10,
 }
 
