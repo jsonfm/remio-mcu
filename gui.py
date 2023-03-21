@@ -28,7 +28,7 @@ ui_path = os.path.dirname(os.path.abspath(__file__))
 ui_file = os.path.join(ui_path, "gui.ui")
 
 
-EXPERIMENT_ROOM = config("SOCKETIO_SERVER_ROOM", default="ROOM_X", cast=str)
+EXPERIMENT_ROOM = config.get("SOCKETIO_SERVER_ROOM", "ROOM_X")
 
 
 class CustomMockup(QMainWindow, Mockup):

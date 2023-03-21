@@ -1,14 +1,14 @@
 """Settings file."""
-from decouple import AutoConfig
+from dotenv import dotenv_values
 from utils.processing import processing
 from server.routes import *
 
 # ENV PATH
-config = AutoConfig(search_path=".")
+config = dotenv_values(".env")
 
 # ------------------------ SERVER SETTINGS ------------------------------------
 serverSettings: dict = {
-    "address": config('SOCKETIO_SERVER_ADDRESS', default="http://localhost:3000", cast=str),
+    "address": config.get('SOCKETIO_SERVER_ADDRESS', "http://localhost:3000"),
     "request_timeout": 10,
 }
 
