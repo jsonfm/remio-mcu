@@ -13,9 +13,9 @@ multidict==6.0.2
 numpy==1.21.6
 opencv-python==4.6.0.66
 pydantic==1.10.6
-PyQt6==6.4.2
-PyQt6-Qt6==6.4.3
-PyQt6-sip==13.4.1
+PyQt5==5.15.9
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.11.1
 pyserial==3.5
 python-decouple==3.6
 python-dotenv==0.21.1
