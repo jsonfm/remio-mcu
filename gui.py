@@ -5,9 +5,9 @@ import os
 import sys
 
 ## 
-from PyQt6 import uic
-from PyQt6.QtWidgets import QMainWindow, QApplication
-from PyQt6.QtCore import QTimer
+from PyQt5 import uic
+from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtCore import QTimer
 from remio import Mockup
 
 #
