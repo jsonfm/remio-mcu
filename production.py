@@ -12,8 +12,7 @@ from utils.mjpegfastapiserver import MJPEGAsyncServer
 from utils.variables import Variables
 
 
-EXPERIMENT_ROOM = config("SOCKETIO_SERVER_ROOM", default="ROOM_X", cast=str)
-
+EXPERIMENT_ROOM = config.get("SOCKETIO_SERVER_ROOM", "ROOM_X")
 
 class CustomMockup(Mockup):
     """A class for manage a mockup without a local GUI."""
