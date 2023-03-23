@@ -51,12 +51,13 @@ class CustomMockup(QMainWindow, Mockup):
         # self.streamBtn.clicked.connect(lambda value: self.streamer.setPause(value))
         # self.ledSerial.clicked.connect(lambda value: self.serialReconnect(value))
         # self.ledSocket.clicked.connect(lambda value: self.socketReconnect(value))
-        self.speedSlider.valueChanged.connect(lambda value: self.speedLabel.setText(f"{value * 0.3: .2f}"))
+        self.speedSlider.valueChanged.connect(lambda value: self.speedLabel.setText("{:05.2f}".format(value * 0.3).zfill(4)))
         self.speedSlider.sliderReleased.connect(lambda: self.updateVariables("speed", self.speedSlider.value() * 0.3))
         self.playBtn.clicked.connect(lambda: self.updateVariables("play", self.playBtn.isChecked()))
-        self.r1Btn.clicked.connect(lambda value: self.updateVariables("r1Btn", value))
-        self.r2Btn.clicked.connect(lambda value: self.updateVariables("r2Btn", value))
-        self.r3Btn.clicked.connect(lambda value: self.updateVariables("r3Btn", value))
+        self.dirBtn.clicked.connect(lambda: self.updateVariables("direction", self.dirBtn.isChecked()))
+        # self.r1Btn.clicked.connect(lambda value: self.updateVariables("r1Btn", value))
+        # self.r2Btn.clicked.connect(lambda value: self.updateVariables("r2Btn", value))
+        # self.r3Btn.clicked.connect(lambda value: self.updateVariables("r3Btn", value))
         
 
     def configureControlButtons(self):
@@ -88,15 +89,13 @@ class CustomMockup(QMainWindow, Mockup):
         self.variables = Variables({
             "speed": 0,
             "play": False,
-            "r1Btn": False,
-            "r2Btn": False,
-            "r3Btn": False,
+            "direction": False 
         }, interval=3, supervise=self.superviseVariablesStreaming)
         # self.variables.setEnabled(False)
 
     def configureMJPEG(self):
         """Configures a MJPEG Server for streaming video."""
-        self.mjpegserver = MJPEGAsyncServer(self.camera["webcam"], fps=15)
+        self.mjpegserver = MJPEGAsyncServer(self.camera["webcam"], fps=12)
         self.mjpegserver.start()
 
     # GUI
@@ -115,9 +114,12 @@ class CustomMockup(QMainWindow, Mockup):
     def setVariablesOnGUI(self):
         """Sets variables on the GUI."""
         variables = self.variables.values()
-        self.r1Btn.setChecked(variables["r1Btn"])
-        self.r2Btn.setChecked(variables["r2Btn"])
-        self.r3Btn.setChecked(variables["r3Btn"])
+        self.playBtn.setChecked(variables["play"])
+        self.dirBtn.setChecked(variables["direction"])
+        self.speedSlider.setValue(int(variables["speed"] / 0.3))
+        # self.r1Btn.setChecked(variables["r1Btn"])
+        # self.r2Btn.setChecked(variables["r2Btn"])
+        # self.r3Btn.setChecked(variables["r3Btn"])
 
     # Serial
     def serialPortsUpdate(self, ports: list):

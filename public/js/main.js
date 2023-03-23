@@ -11,10 +11,11 @@ class CustomMockup {
     /** Loads the GUI */
     loadGUI = () => {
         // this.image = new CustomImage("image");
-        this.btn1 = new jsqt.Toggle("btn1", "btn btn-light", "btn btn-dark");
-        this.btn2 = new jsqt.Toggle("btn2", "btn btn-light", "btn btn-dark");
-        this.btn3 = new jsqt.Toggle("btn3", "btn btn-light", "btn btn-dark");
+        this.playBtn = new jsqt.Toggle("playBtn", "btn btn-light", "btn btn-dark");
+        this.dirBtn = new jsqt.Toggle("dirBtn", "btn btn-light", "btn btn-dark");
         this.ledSocket = new jsqt.Toggle("ledSocket", "btn btn-success rounded-pill", "btn btn-light rounded-pill");
+        this.speedSlider = new jsqt.Base("speedSlider");
+        this.speedLabel = new jsqt.Label("speedLabel");
     }
 
     /** Configures GUI */
@@ -25,9 +26,10 @@ class CustomMockup {
         setTimeout(this.SuperviseVariablesStreaming, 500);
 
         // Control buttons
-        this.btn1.on("click", () => this.updateVariables("btn1", this.btn1.isChecked()));
-        this.btn2.on("click", () => this.updateVariables("btn2", this.btn2.isChecked()));
-        this.btn3.on("click", () => this.updateVariables("btn3", this.btn3.isChecked()));
+        this.playBtn.on("click", () => this.updateVariables("play", this.playBtn.isChecked()));
+        this.dirBtn.on("click", () => this.updateVariables("direction", this.dirBtn.isChecked()));
+        this.speedSlider.on("change", () => this.updateVariables("speed", this.speedSlider.value() * 0.3));
+        this.speedSlider.on("input", () => this.speedLabel.setText(`${(this.speedSlider.value() * 0.3).toFixed(2)}`))
     }
 
     /** Configures the socketio events */
@@ -42,43 +44,43 @@ class CustomMockup {
         this.socket.on("disconnect", this.updateConnectionStatus);
         this.socket.on(SERVER_SENDS_DATA_WEB, this.receiveVariables);
         this.socket.on(SERVER_NOTIFIES_DATA_WERE_RECEIVED_WEB, this.variables.streamedSucessfully);
-        // this.socket.on(SERVER_STREAMS_VIDEO_WEB, this.updateVideo);
     }
 
     /** Configures variables */
     configureVariables = () => {
         this.variables = new Variables({
-            "btn1": false,
-            "btn2": false,
-            "btn3": false,
+            "play": false,
+            "direction": false,
+            "speed": 0,
         }, true, 3000, this.superviseVariablesStreaming);
     }
 
     /** locks the GUI elements  */
     lockGUI(){
-        this.btn1.setEnabled(false);
-        this.btn2.setEnabled(false);
-        this.btn3.setEnabled(false);
+        this.playBtn.setEnabled(false);
+        this.dirBtn.setEnabled(false);
+        this.speedSlider.setEnabled(false);
     }
 
     /** Unlocks the GUI elements */
     unlockGUI(){
-        this.btn1.setEnabled(true);
-        this.btn2.setEnabled(true);
-        this.btn3.setEnabled(true);
+        this.playBtn.setEnabled(true);
+        this.dirBtn.setEnabled(true);
+        this.speedSlider.setEnabled(true);
     }
 
     /** Sets variables on the GUI. */
     setVariablesOnGUI = () => {
+        const parseVal = (value) => parseInt(parseFloat(value) / 0.3)
         const data = this.variables.values();
-        this.btn1.setChecked(data["btn1"]);
-        this.btn2.setChecked(data["btn2"]);
-        this.btn3.setChecked(data["btn3"]);
+        this.playBtn.setChecked(data["play"]);
+        this.dirBtn.setChecked(data["direction"]);
+        this.speedSlider.setValue(parseVal(data["speed"]));
+        this.speedLabel.setText(parseFloat(data["speed"]).toFixed(2));
     }
 
     /** Checks the variables streamed status and restores the backup if necessary. */
     superviseVariablesStreaming = () => {
-        console.log("streamed: ", this.variables.streamed())
         // Confirms variables streaming or restores their last values
         this.variables.checkStreamingFail();
         this.setVariablesOnGUI();
@@ -110,7 +112,6 @@ class CustomMockup {
         if(status){
             this.socket.volatile.emit(WEB_JOINS_ROOM_SERVER, MOCKUP_ROOM);
             this.socket.emit(WEB_REQUESTS_DATA_SERVER);
-            console.log("requesting for updates!")
         }
     }
 
@@ -129,7 +130,7 @@ class CustomMockup {
      * @param {boolean} lock - lock the GUI?
      */
     streamVariables = (lock = true) => {
-        this.socket.volatile.emit(WEB_SENDS_DATA_SERVER, this.variables.values());
+        this.socket.emit(WEB_SENDS_DATA_SERVER, this.variables.values());
         if (lock && this.variables.isEnabled()){
             this.lockGUI();
             this.variables.waitResponse();

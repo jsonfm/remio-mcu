@@ -23,6 +23,4 @@ const WEB_EMITS_EVENT_SERVER = "WEB_EMITS_EVENT_SERVER"
 const WEB_REQUESTS_DATA_SERVER = "WEB_REQUESTS_DATA_SERVER"
 
 /** EXTRA CONSTANTS */
-const SOCKETIO_SERVER_ADDRESS = "https://rimoto-socketio.onrender.com/"
-// const SOCKETIO_SERVER_ADDRESS = "http://localhost:5555"
 const MOCKUP_ROOM = "ROOM_X"

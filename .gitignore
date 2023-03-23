@@ -49,5 +49,6 @@ htmlcov
 node_modules
 
 .env
+env.js
 
 .pypirc
