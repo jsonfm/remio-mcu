@@ -37,12 +37,22 @@ Clone the repository:
 git clone https://github.com/jsonfm/remio-mcu.git [your-project-name]
 ```
 
-Create and activate a virtual environment:
+Create and activate a virtual environment.
+
+Unix systems:
 ```bash
 python3 -m venv venv
 
 source venv/bin/activate
 ```
+
+Windows:
+```
+py -m venv venv
+
+venv\Scripts\activate
+```
+
 
 ### ⚒️ Dependencies
 After you set the virutal env, install dependencies:
@@ -63,7 +73,7 @@ To run the experiment without the local GUI (production), you could use the `pro
 python production.py
 ```
 ### ✨ SocketIO Server
-A socketio server was added for do some tests.
+A socketio server was added to do some tests.
 ```
 python run_server.py
 ```
