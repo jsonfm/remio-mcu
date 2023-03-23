@@ -28,7 +28,7 @@ class CustomMockup {
         // Control buttons
         this.playBtn.on("click", () => this.updateVariables("play", this.playBtn.isChecked()));
         this.dirBtn.on("click", () => this.updateVariables("direction", this.dirBtn.isChecked()));
-        this.speedSlider.on("change", () => this.updateVariables("speed", this.speedSlider.value() * 0.3));
+        this.speedSlider.on("change", () => this.updateVariables("speed", this.speedSlider.value()));
         this.speedSlider.on("input", () => this.speedLabel.setText(`${(this.speedSlider.value() * 0.3).toFixed(2)}`))
     }
 
@@ -135,6 +135,7 @@ class CustomMockup {
             this.lockGUI();
             this.variables.waitResponse();
         }
+        console.log("stream: ", this.variables.values());
     }
 
     /**

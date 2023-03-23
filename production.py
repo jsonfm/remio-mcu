@@ -38,7 +38,6 @@ class CustomMockup(Mockup):
         self.socket.on(SERVER_REQUESTS_DATA_EXPERIMENT, lambda: self.streamVariables(lock=False))
         self.socket.on(SERVER_STREAMER_SET_PAUSE_EXPERIMENT, lambda pause: self.updateVideoPauseState(pause))
 
-
     def configureVariables(self):
         """Configures control variables."""
         self.variables = Variables({
@@ -52,20 +51,17 @@ class CustomMockup(Mockup):
         self.mjpegserver = MJPEGAsyncServer(self.camera["webcam"], fps=12)
         self.mjpegserver.start()
 
-    def serialDataIncoming(self, data: Union[str, dict]):
+    def serialDataIncoming(self, data: str):
         """Reads incoming data from the serial device."""
-        if isinstance(data, dict):
-            message = data["arduino"]
-
-        if isinstance(data, str):
-            message = data
-
-        if "$" in message:
-            print("message: ", message)
-        else:
-            self.variables.update(message)
-            self.variables.setUpdated(False)
+        json = data["arduino"]
+        if "$" in json:
+            print("message: ", json)
+        elif "{" in json:
+            self.variables.update(json)
+            self.variables.setStreamingStatus(False)
             self.streamVariables()
+        else:
+            print("Arduino says: ", json)
 
     def socketConnectionStatus(self):
         """Shows the connection socket status."""
@@ -97,11 +93,6 @@ class CustomMockup(Mockup):
         if lock:
             self.variablesTimer.resume(now=False) 
 
-    def streamVariablesOK(self):
-        """It's called when the server notifies variables were received correctly."""
-        self.variables.setUpdated(True)
-        self.variablesTimer.resume(now=True)
-
 
 if __name__ == "__main__":
     experiment = CustomMockup(
@@ -112,7 +103,7 @@ if __name__ == "__main__":
     )
     experiment.start(
         camera=True, 
-        serial=False, 
+        serial=True, 
         socket=True, 
         streamer=False, 
         wait=True

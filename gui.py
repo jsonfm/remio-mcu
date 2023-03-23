@@ -55,10 +55,7 @@ class CustomMockup(QMainWindow, Mockup):
         self.speedSlider.sliderReleased.connect(lambda: self.updateVariables("speed", self.speedSlider.value() * 0.3))
         self.playBtn.clicked.connect(lambda: self.updateVariables("play", self.playBtn.isChecked()))
         self.dirBtn.clicked.connect(lambda: self.updateVariables("direction", self.dirBtn.isChecked()))
-        # self.r1Btn.clicked.connect(lambda value: self.updateVariables("r1Btn", value))
-        # self.r2Btn.clicked.connect(lambda value: self.updateVariables("r2Btn", value))
-        # self.r3Btn.clicked.connect(lambda value: self.updateVariables("r3Btn", value))
-        
+
 
     def configureControlButtons(self):
         """Configures the control buttons."""
@@ -91,7 +88,6 @@ class CustomMockup(QMainWindow, Mockup):
             "play": False,
             "direction": False 
         }, interval=3, supervise=self.superviseVariablesStreaming)
-        # self.variables.setEnabled(False)
 
     def configureMJPEG(self):
         """Configures a MJPEG Server for streaming video."""
@@ -101,15 +97,15 @@ class CustomMockup(QMainWindow, Mockup):
     # GUI
     def lockGUI(self):
         """Locks the GUI elements."""
-        self.r1Btn.setEnabled(False)
-        self.r2Btn.setEnabled(False)
-        self.r3Btn.setEnabled(False)
-    
+        self.playBtn.setEnabled(False)
+        self.dirtn.setEnabled(False)
+        self.speedSlider.setEnabled(False)
+
     def unlockGUI(self):
         """Unlocks the GUI elements."""
-        self.r1Btn.setEnabled(True)
-        self.r2Btn.setEnabled(True)
-        self.r3Btn.setEnabled(True)
+        self.playBtn.setEnabled(True)
+        self.dirBtn.setEnabled(True)
+        self.speedSlider.setEnabled(True)
 
     def setVariablesOnGUI(self):
         """Sets variables on the GUI."""
@@ -117,9 +113,6 @@ class CustomMockup(QMainWindow, Mockup):
         self.playBtn.setChecked(variables["play"])
         self.dirBtn.setChecked(variables["direction"])
         self.speedSlider.setValue(int(variables["speed"] / 0.3))
-        # self.r1Btn.setChecked(variables["r1Btn"])
-        # self.r2Btn.setChecked(variables["r2Btn"])
-        # self.r3Btn.setChecked(variables["r3Btn"])
 
     # Serial
     def serialPortsUpdate(self, ports: list):

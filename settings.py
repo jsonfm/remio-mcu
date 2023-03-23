@@ -45,7 +45,7 @@ cameraSettings = {
 
 serialSettings = {
     "arduino": {
-        "port": "/dev/cu.usbserial-1460",
+        "port": config.get("SERIAL_PORT", "/dev/cu.usbserial-1460"),
         "baudrate": 9600,
         "timeout": 1.0,
         "reconnectDelay": 5,
