@@ -1,7 +1,7 @@
 /*
-    Base Arduino - Remio
+    REMIO - MCU
 
-    An example of an Arduino Experiment to be used with REMIO python library.
+    A MCU experiment made with remio.
 
     By Jason Francisco Macas Mora
 */
@@ -22,13 +22,15 @@
 
 #include <ArduinoJson.h>
 #include <SimpleTimer.h>
+#include <AccelStepper.h>
 
 /* =====================================  PINS AREA  ===================================== */
 
-// Sensors Pins
-const int sensor1Pin = A0;
-const int sensor2Pin = A1;
-const int sensor3Pin = A2;
+const int motorInterfaceType = 1;
+const int dirPin = 6;
+const int stepPin = 7;
+const int enablePin = 8;
+const int lightPin = 9;
 
 /* =================================  VARIABLES FOR SERIAL  ================================ */
 
@@ -44,21 +46,28 @@ StaticJsonDocument<512> variables;
 
 // DEFINE CONTROL VARIABLES -------------------<
 
-bool running = false;
-bool btn1 = false;
-bool btn2 = false;
-bool btn3 = false;
+bool play = false;
+bool direction = true;
+bool lightState = false;
+
+
 
 // DEFINE INTERNAL VARIABLES ------------------<
 
 bool isInUse = false;
+bool speedReady = true;
+int stepSpeedSetPoint = 20;
+int stepSpeed = 0;
+int stepsMeasured = 0;
 
+const int stepJump = 20;
+AccelStepper stepper = AccelStepper(motorInterfaceType, stepPin, dirPin);
 /* =====================================  TIMERS AREA  ===================================== */
 
 // STOP TIMER ---------------------------------<
 
-const long STOP_TIMER_INTERVAL = 10000; //ms
-const int TIME_MINUTES_LIMIT = 2; 
+const long STOP_TIMER_INTERVAL = 60000; //ms
+const int TIME_MINUTES_LIMIT = 5; 
 SimpleTimer stopTimer(STOP_TIMER_INTERVAL);
 int stopMinutes = 0;
 
@@ -68,14 +77,14 @@ int stopMinutes = 0;
 void autoStop(){
 
   if(stopTimer.isReady()){
-//    stopMinutes++;
-    sendControlVariables();
+    stopMinutes++;
     stopTimer.reset();
   }
 
   if(stopMinutes >= TIME_MINUTES_LIMIT){
     stop();
     stopMinutes = 0;
+    isInUse = false;
   }
 
 }
@@ -94,9 +103,9 @@ void resetStopTimer(){
 * It sends the control variables as JSON object thorugh the serial.
 */
 void sendControlVariables(){
-  variables["btn1"] = btn1;
-  variables["btn2"] = btn2;
-  variables["btn3"] = btn3;
+  variables["play"] = play;
+  variables["direction"] = direction;
+  variables["speed"] = stepSpeed;
   serializeJson(variables, Serial);  
   Serial.println();
 }
@@ -118,10 +127,11 @@ void readControlVariables(){
     return;
   }
 
-  btn1 = variables["btn1"];
-  btn2 = variables["btn2"];
-  btn3 = variables["btn3"];
+  play = variables["play"];
+  direction = variables["direction"];
+  stepSpeed = variables["speed"];
 
+  configureExperiment();
   notifyDataWereReceived();
 }
 
@@ -191,39 +201,99 @@ void emitStatus(){
 }
 
 /* ================================  CONTROL FUNCTIONS =================================== */
+SimpleTimer speedControlTimer(2000);
 
-void configureExperiment(){
-  isInUse = true;
-  resetStopTimer();
-  // Do somehting...
+void speedWasSet() {
+  Serial.println("$speedReady");  
+}
+
+void speedControl(){
+    if(speedControlTimer.isReady()){
+      setSoftSpeed();
+      speedControlTimer.reset();
+    }
+ 
+}
+
+void setSoftSpeed(){
+  //
+   if(speedReady == false && play == true){
+      // setteo de subida
+      if(stepSpeed < stepSpeedSetPoint){ //si velocidad actual es menor que el setpoint
+       stepSpeed += stepJump; // incrementar velocidad actual N pasos
+ 
+       if(stepSpeed >= stepSpeedSetPoint){ // Si se superó o igualó el setpoint
+        stepSpeed = stepSpeedSetPoint; // Settear velocidad en el setPoint
+        speedReady = true; // Velocidad Setteada
+        speedWasSet();
+        return;
+       }
+  
+     }  
+      
+      // setteo de bajada
+      if(stepSpeed >= stepSpeedSetPoint){
+        stepSpeed -= stepJump;
+
+        if(stepSpeed <= stepSpeedSetPoint){
+          stepSpeed = stepSpeedSetPoint;
+          speedReady = true;
+          speedWasSet();
+          return;
+        }  
+     }
+     
+   }    
 }
 
 void stop(){
-  // Do something...
+  lightState = false;
+  play = false;
+  speedReady = true; 
+  stepSpeed=0;
+  sendControlVariables();
+  stopTimer.reset();
+  //Serial.println("$stopped");
 }
 
-void readSensors() {
-  // Do something...
+void lightControl(){
+  digitalWrite(lightPin, lightState); 
 }
 
 void motorControl(){
-  // Do something...
-}
-
-void magnetControl() {
-  // Do something...
-}
-
-void runExperiment(){
-  // Do something...
+  // Enable or disable Motor
+  digitalWrite(enablePin, !play);
+ 
+  //choose direction
+  if(!direction)
+    stepper.setSpeed(stepSpeed);
+    
+  if(direction)
+    stepper.setSpeed(-stepSpeed);
+    
+  //move motor  
+  stepper.runSpeed();  
 }
 
 /* ================================  SETUP SYSTEM =================================== */
 
 void configurePins(){
-  pinMode(sensor1Pin, INPUT_PULLUP);
-  pinMode(sensor2Pin, INPUT_PULLUP);
-  pinMode(sensor3Pin, INPUT_PULLUP);
+  pinMode(lightPin, OUTPUT);
+  digitalWrite(lightPin, LOW);
+}
+
+void configureStepper() {
+  stepper.setMaxSpeed(200);
+  stepper.setAcceleration(400);
+}
+
+void configureExperiment(){
+  speedReady = false;
+  isInUse = true;
+  stopMinutes = 0;
+  if(!play)
+    stepSpeed = 0;
+  stopTimer.reset();
 }
 
 void setup() {
@@ -236,12 +306,15 @@ void setup() {
 
   // Configure Pins
   configurePins();
+
+  // Stepper
+  configureStepper();
 }
 
 void loop() {
   autoStop();
-  magnetControl();
-  readSensors();
-  runExperiment();
+  speedControl();
+  lightControl();
   motorControl();
+
 }
