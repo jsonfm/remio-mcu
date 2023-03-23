@@ -71,12 +71,11 @@ class CustomMockup {
 
     /** Sets variables on the GUI. */
     setVariablesOnGUI = () => {
-        const parseVal = (value) => parseInt(parseFloat(value) / 0.3)
         const data = this.variables.values();
         this.playBtn.setChecked(data["play"]);
         this.dirBtn.setChecked(data["direction"]);
-        this.speedSlider.setValue(parseVal(data["speed"]));
-        this.speedLabel.setText(parseFloat(data["speed"]).toFixed(2));
+        this.speedSlider.setValue(data["speed"]);
+        this.speedLabel.setText((data["speed"] * 0.3).toFixed(2));
     }
 
     /** Checks the variables streamed status and restores the backup if necessary. */
