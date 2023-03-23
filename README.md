@@ -2,7 +2,8 @@
 This is a python template for making experiment with `remio` library. It gives to you a project structure, a some utils for developing quickly remote laboratory projects.
 
 ### 🎨 GUI
-The project includes a simple GUI made with Bootstrap 5. You can find the files on `public` folder:
+The project includes a simple GUI made with Bootstrap 5. You can find the files inside the `public` folder:
+
 <img src="./docs/ssweb.png" style="margin: 1rem 0;">
 
 You could edit it according to your needs. I recommed to you use `QtDesigner` program which simplifies the GUI creation proccess. 
@@ -33,7 +34,7 @@ Some folders were created to help you structure the project:
 ### ⚙️ Installation
 Clone the repository:
 ```
-git clone https://github.com/jsonfm/remio-mockup-template.git [your-project-name]
+git clone https://github.com/jsonfm/remio-mcu.git [your-project-name]
 ```
 
 Create and activate a virtual environment:
